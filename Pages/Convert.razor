@@ -1,0 +1,54 @@
+﻿@page "/convert"
+@using MyBlazor.Components
+
+<h3>Konvertering av enheter</h3>
+
+<!-- Container för konvertering av olika enheter -->
+<div class="conversion-container">
+    <!-- Sektion för konvertering från meter till fot -->
+    <div class="conversion">
+        <label for="metersInput">Meter till fot:</label>
+        <!-- Bindning av input-fältet till variabeln 'meters' -->
+        <input type="number" id="metersInput" @bind="meters" placeholder="Ange antal meter" class="form-control" />
+        <!-- Knapp som triggar omvandlingsfunktionen -->
+        <button @onclick="ConvertMetersToFeet" class="btn btn-primary mt-2">Konvertera</button>
+        <!-- Visar resultatet för omvandling från meter till fot -->
+        <p>@meters meter = @feet.ToString("0.0") fot</p>
+    </div>
+
+    <!-- Sektion för konvertering från km/h till miles/h -->
+    <div class="conversion">
+        <label for="kmhInput">Km/h till miles/h:</label>
+        <input type="number" id="kmhInput" @bind="kmh" placeholder="Ange antal km/h" class="form-control" />
+        <button @onclick="ConvertKmhToMiles" class="btn btn-primary mt-2">Konvertera</button>
+        <p>@kmh km/h = @miles.ToString("0") miles/h</p>
+    </div>
+</div>
+
+<!-- Använder komponenten ConversionHistory för att visa konverteringshistorik -->
+<ConversionHistory ConversionResults="conversionResults" />
+
+@code {
+    // Deklarerar variabler för att lagra input och resultat
+    private double meters;
+    private double feet;
+    private double kmh;
+    private double miles;
+    
+    // Lista för att lagra konverteringsresultat som ska visas i ConversionHistory-komponenten
+    private List<string> conversionResults = new List<string>();
+
+    // Metod för att konvertera meter till fot och lägga till resultatet i historiken
+    private void ConvertMetersToFeet()
+    {
+        feet = Math.Round(meters * 3.28084, 1);  // Omvandlar meter till fot - dundar med ett decimaltal
+        conversionResults.Add($"{meters} meter = {feet} fot");  // Lägger till resultatet i historiken
+    }
+
+    // Metod för att konvertera km/h till miles/h och lägga till resultatet i historiken
+    private void ConvertKmhToMiles()
+    {
+        miles = Math.Round(kmh * 0.621371, 0);  
+        conversionResults.Add($"{kmh} km/h = {miles} miles/h");  
+    }
+}

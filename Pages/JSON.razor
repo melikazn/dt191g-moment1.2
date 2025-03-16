@@ -1,0 +1,73 @@
+﻿@page "/json"  
+@using MyBlazor.Models 
+@inject HttpClient Http 
+@inject IJSRuntime JSRuntime 
+
+<h3>Hämta JSON Data</h3>
+
+<!-- Knapp som triggar hämtning av JSON-data när användaren klickar -->
+<button @onclick="GetJsonData" class="btn btn-primary">Hämta JSON Data</button>
+
+<!-- Visar data om 'post' inte är null -->
+@if (post != null)
+{
+    <div class="post-details mt-3">
+        <h4>@post.title</h4>
+        <p><strong>Författare:</strong> @post.author</p>
+        <p><strong>Publicerad:</strong> @post.published</p>
+        <p><strong>Innehåll:</strong> @post.content</p>
+    </div>
+}
+else if (errorMessage != null)
+{
+    <!-- Visar ett felmeddelande om något gick fel -->
+    <div class="alert alert-danger mt-3">
+        <strong>Fel:</strong> @errorMessage
+    </div>
+}
+
+@code {
+    private Post? post;  // Deklarerar en variabel för att lagra data från JSON-filen
+    private string? errorMessage;  // Variabel för att lagra eventuella felmeddelanden
+
+    // Metod som hämtar JSON-data och deserialiserar den
+    private async Task GetJsonData()
+    {
+        try
+        {
+            // Hämtar JSON-data som en sträng från filen 'data.json'
+            var jsonData = await Http.GetStringAsync("data.json");
+
+            // Loggar den hämtade JSON-datan till webbläsarens konsol
+            await JSRuntime.InvokeVoidAsync("console.log", jsonData);
+
+            // Kontrollera om JSON-datan är tom
+            if (string.IsNullOrEmpty(jsonData))
+            {
+                errorMessage = "JSON-filen är tom.";  // Sätt felmeddelande om filen är tom
+                post = null;  // Ingen post-data att visa
+            }
+            else
+            {
+                // Försök att deserialisera JSON till ett 'Post'-objekt
+                post = System.Text.Json.JsonSerializer.Deserialize<Post>(jsonData);
+
+                // Kontrollera om deserialiseringen misslyckades
+                if (post == null)
+                {
+                    errorMessage = "JSON-data kunde inte deserialiseras.";  // Felmeddelande om deserialisering misslyckades
+                }
+                else
+                {
+                    errorMessage = null;  // Inget fel
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            // Fångar eventuella fel och sätter ett felmeddelande
+            errorMessage = $"Fel vid hämtning av JSON: {ex.Message}";
+            post = null;  // Ingen post-data att visa
+        }
+    }
+}

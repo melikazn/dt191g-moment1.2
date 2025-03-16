@@ -1,0 +1,17 @@
+@code {
+        // Denna parameter gör att komponenten kan ta emot data från en föräldrakomponent
+    [Parameter] public List<string> ConversionResults { get; set; } = new();
+}
+<!-- konverteringshistoriken renderas -->
+<div class="conversion-history mt-4">
+    <h4>Konverteringshistorik</h4>
+    <!-- Oordnad lista för att visa varje konverteringsresultat -->
+    <ul>
+        <!-- Loopa genom varje element -->
+        @foreach (var result in ConversionResults)
+        {
+            <!-- konverteringsresultat -->
+            <li>@result</li>
+        }
+    </ul>
+</div>
